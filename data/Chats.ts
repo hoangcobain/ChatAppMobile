@@ -18,7 +18,7 @@ export default {
     {
       id: "m1",
       content: "How are you, Lukas!",
-      createdAt: "2020-10-10T12:48:00.000Z",
+      createdAt: "2022-10-10T12:48:00.000Z",
       user: {
         id: "u1",
         name: "Vadim",

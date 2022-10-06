@@ -20,6 +20,7 @@ export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   Modal: undefined;
   NotFound: undefined;
+  ChatRoom: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
@@ -48,10 +49,11 @@ export type Message = {
   id: String;
   content: String;
   createdAt: String;
+  user: User;
 };
 
 export type ChatRoom = {
   id: String;
-  users: [User];
+  users: User[];
   lastMessage: Message;
 };

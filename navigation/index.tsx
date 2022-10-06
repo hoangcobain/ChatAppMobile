@@ -3,7 +3,6 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { FontAwesome } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import {
@@ -20,6 +19,7 @@ import useColorScheme from "../hooks/useColorScheme";
 import ModalScreen from "../screens/ModalScreen";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import ChatScreen from "../screens/ChatScreen";
+import ChatRoomScreen from "../screens/ChatRoomScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
 import {
   RootStackParamList,
@@ -32,6 +32,8 @@ import {
   MaterialCommunityIcons,
   AntDesign,
   MaterialIcons,
+  FontAwesome,
+  FontAwesome5,
 } from "@expo/vector-icons";
 import { View } from "../components/Themed";
 
@@ -89,6 +91,24 @@ function RootNavigator() {
             );
           },
         }}
+      />
+      <Stack.Screen
+        name="ChatRoom"
+        component={ChatRoomScreen}
+        options={({ route }) => ({
+          title: route.params.name,
+          headerRight: () => (
+            <View style={styles.icon_header_right}>
+              <MaterialIcons name="call" size={22} color={"white"} />
+              <FontAwesome5 name="video" size={22} color={"white"} />
+              <MaterialCommunityIcons
+                name="dots-vertical"
+                size={22}
+                color={"white"}
+              />
+            </View>
+          ),
+        })}
       />
       <Stack.Screen
         name="NotFound"
@@ -198,6 +218,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.tint,
     flexDirection: "row",
     width: 60,
+    justifyContent: "space-between",
+  },
+  icon_header_right: {
+    backgroundColor: Colors.light.tint,
+    flexDirection: "row",
+    width: 100,
     justifyContent: "space-between",
   },
 });
