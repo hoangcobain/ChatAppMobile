@@ -36,6 +36,7 @@ import {
   FontAwesome5,
 } from "@expo/vector-icons";
 import { View } from "../components/Themed";
+import ContactsScreen from "../screens/ContactsScreen";
 
 export default function Navigation({
   colorScheme,
@@ -109,6 +110,11 @@ function RootNavigator() {
             </View>
           ),
         })}
+      />
+      <Stack.Screen
+        name="Contacts"
+        component={ContactsScreen}
+        options={{ title: "Contacts" }}
       />
       <Stack.Screen
         name="NotFound"
