@@ -4,6 +4,7 @@
  *
  */
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Menu, MenuItem, MenuDivider } from "react-native-material-menu";
 // import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import {
   NavigationContainer,
@@ -37,6 +38,7 @@ import {
 } from "@expo/vector-icons";
 import { View } from "../components/Themed";
 import ContactsScreen from "../screens/ContactsScreen";
+import MenuCustom from "../components/MenuItem";
 
 export default function Navigation({
   colorScheme,
@@ -81,14 +83,15 @@ function RootNavigator() {
           headerTransparent: true,
           headerRight() {
             return (
-              <View style={styles.icon_search_dots}>
-                <Octicons name="search" size={24} color={"white"} />
-                <MaterialCommunityIcons
-                  name="dots-vertical"
-                  size={24}
-                  color={"white"}
-                />
-              </View>
+              // <View style={styles.icon_search_dots}>
+              //   <Octicons name="search" size={24} color={"white"} />
+              //   <MaterialCommunityIcons
+              //     name="dots-vertical"
+              //     size={24}
+              //     color={"white"}
+              //   />
+              // </View>
+              <MenuCustom />
             );
           },
         }}
@@ -220,12 +223,6 @@ function TabBarIcon(props: {
 }
 
 const styles = StyleSheet.create({
-  icon_search_dots: {
-    backgroundColor: Colors.light.tint,
-    flexDirection: "row",
-    width: 60,
-    justifyContent: "space-between",
-  },
   icon_header_right: {
     backgroundColor: Colors.light.tint,
     flexDirection: "row",

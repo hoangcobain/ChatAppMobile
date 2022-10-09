@@ -1,4 +1,4 @@
-import { StyleSheet, FlatList } from "react-native";
+import { StyleSheet, FlatList, Pressable, Text } from "react-native";
 
 import EditScreenInfo from "../components/EditScreenInfo";
 import { View } from "../components/Themed";
@@ -6,6 +6,7 @@ import { RootTabScreenProps } from "../types";
 import ChatListItem from "../components/ChatListItem";
 import chatRooms from "../data/ChatRooms";
 import NewMessageButton from "../components/NewMessageButton";
+import { Auth } from "aws-amplify";
 
 export default function TabOneScreen({
   navigation,

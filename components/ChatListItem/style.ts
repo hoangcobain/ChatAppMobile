@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
   },
   midContainer: {
     justifyContent: "space-around",
+    width: "60%",
   },
   avatar: {
     width: 60,
