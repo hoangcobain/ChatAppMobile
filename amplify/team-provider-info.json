@@ -19,7 +19,7 @@
       "function": {
         "SignalClonePostConfirmation": {
           "deploymentBucketName": "amplify-signalclone-staging-50834-deployment",
-          "s3Key": "amplify-builds/SignalClonePostConfirmation-5473497377346d37627a-build.zip"
+          "s3Key": "amplify-builds/SignalClonePostConfirmation-66785335664167573764-build.zip"
         }
       }
     }

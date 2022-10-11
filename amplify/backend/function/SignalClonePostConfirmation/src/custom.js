@@ -19,7 +19,7 @@ exports.handler = async (event) => {
   const userItem = {
     __typename: { S: "User" },
     _lastChangedAt: { N: timestamp.toString() },
-    _version: { N: 1 },
+    _version: { N: "1" },
     createdAt: { S: now.toISOString() },
     updatedAt: { S: now.toISOString() },
     id: { S: event.request.userAttributes.sub },
@@ -32,7 +32,7 @@ exports.handler = async (event) => {
   };
 
   try {
-    await docClient.put(params).promise();
+    await docClient.putItem(params).promise();
     console.log("success");
   } catch (error) {
     console.log(error);

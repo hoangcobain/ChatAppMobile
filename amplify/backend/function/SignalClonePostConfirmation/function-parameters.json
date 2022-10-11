@@ -13,5 +13,6 @@
   "triggerEventPath": "PostConfirmation.event.json",
   "roleName": "SignalClonePostConfirmation",
   "skipEdit": true,
-  "enableCors": false
+  "enableCors": false,
+  "permissions": {}
 }
