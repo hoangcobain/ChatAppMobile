@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from "react-native";
-import { User } from "../../types";
+// import { User } from "../../types";
 import styles from "./style";
 import { useNavigation } from "@react-navigation/native";
+import { Auth, DataStore } from "aws-amplify";
+import { ChatRoom, User, ChatRoomUser } from "../../src/models";
 
 export type ContactListItemProps = {
   user: User;
@@ -21,8 +23,33 @@ const ContactListItem = (props: ContactListItemProps) => {
 
   // console.log(user);
 
-  const onClick = () => {
-    //navigation to chat room with this user
+  //navigation to chat room with this user
+  const onClick = async () => {
+    // if there is already a chat room with these users, then redirect to the existed chatroom
+    //otherwise  create a new chat room for these users
+
+    //Create a chat room
+    const newChatRoom = await DataStore.save(new ChatRoom({ newMessages: 0 }));
+
+    //connect authenticated user with chat room
+    const authUser = await Auth.currentAuthenticatedUser();
+    const dbUser = await DataStore.query(User, authUser.attributes.sub);
+    await DataStore.save(
+      new ChatRoomUser({
+        user: dbUser,
+        chatRoom: newChatRoom,
+      })
+    );
+
+    //connect click user with chat room
+    await DataStore.save(
+      new ChatRoomUser({
+        user: user,
+        chatRoom: newChatRoom,
+      })
+    );
+
+    navigation.navigate("ChatRoom", { id: newChatRoom.id });
   };
 
   return (

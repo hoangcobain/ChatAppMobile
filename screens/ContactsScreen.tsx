@@ -1,12 +1,28 @@
 import { StyleSheet, FlatList } from "react-native";
-
+import React, { useState, useEffect } from "react";
 import EditScreenInfo from "../components/EditScreenInfo";
+import { DataStore } from "@aws-amplify/datastore";
 import { View } from "../components/Themed";
 import { RootTabScreenProps } from "../types";
-import users from "../data/Users";
+// import users from "../data/Users";
 import ContactListItem from "../components/ContactListItem";
+import { User } from "../src/models";
 
 export default function Contacts() {
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    DataStore.query(User).then(setUsers);
+  });
+
+  // useEffect(() => {
+  //   const fectchUsers = async () => {
+  //     const fectchUsers = await DataStore.query(User);
+  //     setUsers(fectchUsers);
+  //   };
+  //   fectchUsers();
+  // }, []);
+
   return (
     <View style={styles.container}>
       <FlatList
