@@ -7,6 +7,23 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 10,
   },
+  badgeContainer: {
+    backgroundColor: "#3777f0",
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    left: 45,
+    top: 3,
+  },
+  badgeText: {
+    color: "white",
+    fontSize: 12,
+  },
   leftContainer: {
     flexDirection: "row",
   },
@@ -29,6 +46,7 @@ const styles = StyleSheet.create({
     color: "grey",
   },
   time: {
+    width: "22%",
     marginTop: 6,
     fontSize: 14,
     color: "grey",
