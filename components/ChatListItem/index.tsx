@@ -73,7 +73,9 @@ const ChatListItem = (props: ChatListItemProps) => {
             </View>
           )}
           <View style={styles.midContainer}>
-            <Text style={styles.username}>{user.name}</Text>
+            <Text style={styles.username} numberOfLines={1}>
+              {user.name}
+            </Text>
             {!chatRoom.lastMessage && (
               <Text style={styles.lastMessage} numberOfLines={1}>
                 {lastMessage?.content}

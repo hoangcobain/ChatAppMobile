@@ -39,6 +39,8 @@ import {
 import { View } from "../components/Themed";
 import ContactsScreen from "../screens/ContactsScreen";
 import MenuCustom from "../components/MenuItem";
+import { FA5Style } from "@expo/vector-icons/build/FontAwesome5";
+import ChatRoomHeader from "./ChatRoomHeader";
 
 export default function Navigation({
   colorScheme,
@@ -100,18 +102,8 @@ function RootNavigator() {
         name="ChatRoom"
         component={ChatRoomScreen}
         options={({ route }) => ({
-          title: route.params.name,
-          headerRight: () => (
-            <View style={styles.icon_header_right}>
-              <MaterialIcons name="call" size={22} color={"white"} />
-              <FontAwesome5 name="video" size={22} color={"white"} />
-              <MaterialCommunityIcons
-                name="dots-vertical"
-                size={22}
-                color={"white"}
-              />
-            </View>
-          ),
+          title: "",
+          headerRight: () => <ChatRoomHeader id={route.params.id} />,
         })}
       />
       <Stack.Screen
@@ -221,12 +213,3 @@ function TabBarIcon(props: {
 }) {
   return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
 }
-
-const styles = StyleSheet.create({
-  icon_header_right: {
-    backgroundColor: Colors.light.tint,
-    flexDirection: "row",
-    width: 100,
-    justifyContent: "space-between",
-  },
-});

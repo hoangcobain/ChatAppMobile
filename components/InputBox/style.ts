@@ -33,6 +33,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
   },
+  row: {
+    flexDirection: "column",
+  },
 });
 
 export default styles;
