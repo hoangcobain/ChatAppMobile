@@ -38,10 +38,9 @@ const ChatRoomHeader = ({ id }) => {
       style={{
         backgroundColor: Colors.light.tint,
         flexDirection: "row",
-        width: width - 70,
+        width: width - 65,
         justifyContent: "space-between",
         alignItems: "center",
-        // flex: 1,
       }}
     >
       <View style={styles.info}>
@@ -50,7 +49,7 @@ const ChatRoomHeader = ({ id }) => {
           style={{ width: 35, height: 35, borderRadius: 30, marginRight: 5 }}
         />
         <Text
-          style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+          style={{ fontSize: 18, fontWeight: "bold", color: "white", flex: 1 }}
           numberOfLines={1}
           ellipsizeMode="tail"
         >

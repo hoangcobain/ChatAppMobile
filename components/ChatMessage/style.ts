@@ -3,6 +3,8 @@ import Colors from "../../constants/Colors";
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    // width: 300, // luu y chinh box
+    // marginLeft: 50, // luu y chinh box
   },
   messageBox: {
     backgroundColor: "#e5e5e5",

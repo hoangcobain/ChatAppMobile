@@ -5,7 +5,7 @@ import { View, Text, Pressable } from "react-native";
 import { Menu, MenuItem } from "react-native-material-menu";
 import Colors from "../../constants/Colors";
 import styles from "./style";
-import { Auth } from "aws-amplify";
+import { Auth, DataStore } from "aws-amplify";
 
 const MenuCustom = () => {
   const [visible, setVisible] = useState(false);

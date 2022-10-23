@@ -36,6 +36,15 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "column",
   },
+  imageContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    margin: 5,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: "lightgray",
+    borderRadius: 3,
+  },
 });
 
 export default styles;

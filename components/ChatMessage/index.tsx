@@ -1,10 +1,11 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
-import { Text, View } from "react-native";
+import { Text, useWindowDimensions, View } from "react-native";
 import { Message } from "../../types";
 import styles from "../ChatMessage/style";
 import { Auth, DataStore } from "aws-amplify";
 import { User } from "../../src/models";
+import { S3Image } from "aws-amplify-react-native";
 
 export type ChatMessageProps = {
   messages: Message;
@@ -12,6 +13,7 @@ export type ChatMessageProps = {
 
 const ChatMessage = (props: ChatMessageProps) => {
   const { messages } = props;
+  const { width } = useWindowDimensions();
 
   const [user, setUser] = useState<User | undefined>();
   const [isMe, setIsMe] = useState<boolean>(false);
@@ -44,6 +46,15 @@ const ChatMessage = (props: ChatMessageProps) => {
         ]}
       >
         {!isMe && <Text style={styles.name}>{user?.name}</Text>}
+        {messages.image && (
+          <View style={{ marginBottom: 5 }}>
+            <S3Image
+              imgKey={messages.image}
+              style={{ width: width * 0.75, aspectRatio: 4 / 3 }}
+              resizeMode="contain"
+            />
+          </View>
+        )}
         <Text style={styles.message}>{messages.content}</Text>
         <Text style={styles.time}>{moment(messages.createdAt).fromNow()}</Text>
       </View>
