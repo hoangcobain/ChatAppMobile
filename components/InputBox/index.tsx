@@ -18,6 +18,7 @@ import {
   Fontisto,
   MaterialIcons,
   AntDesign,
+  Feather,
 } from "@expo/vector-icons";
 import { Auth, DataStore, Storage } from "aws-amplify";
 import { Message, ChatRoom } from "../../src/models";
@@ -25,6 +26,9 @@ import EmojiSelector from "react-native-emoji-selector";
 import * as ImagePicker from "expo-image-picker";
 import { Camera } from "expo-camera";
 import { v4 as uuidv4 } from "uuid";
+import Colors from "../../constants/Colors";
+import { Audio, AVPlaybackStatus } from "expo-av";
+import AudioPlayer from "../AudioPlayer";
 
 const InputBox = ({ chatRoom }) => {
   const [message, setMessage] = useState("");
@@ -33,6 +37,10 @@ const InputBox = ({ chatRoom }) => {
   const [startCamera, setStartCamera] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [capturedImage, setCapturedImage] = useState<any>(null);
+  const [progress, setProgress] = useState(0);
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [soundURI, setSoundURI] = useState<string | null>(null);
+
   let camera: Camera;
 
   const onMicrophonePress = () => {
@@ -65,6 +73,8 @@ const InputBox = ({ chatRoom }) => {
   const onPress = () => {
     if (image) {
       sendImage();
+    } else if (soundURI) {
+      sendAudio();
     } else if (message) {
       onSendPress();
     } else {
@@ -76,6 +86,8 @@ const InputBox = ({ chatRoom }) => {
     setMessage("");
     setIsEmojiOpen(false);
     setImage(null);
+    setProgress(0);
+    setSoundURI(null);
   };
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -110,12 +122,18 @@ const InputBox = ({ chatRoom }) => {
     setCapturedImage(photo);
   };
 
+  const progressCallback = async (progress) => {
+    setProgress(progress.loaded / progress.total);
+  };
+
   const sendImage = async () => {
     if (!image) {
       return;
     }
-    const blob = await getImageBlob();
-    const { key } = await Storage.put(`${uuidv4()}.png`, blob);
+    const blob = await getBlob(image);
+    const { key } = await Storage.put(`${uuidv4()}.png`, blob, {
+      progressCallback,
+    });
 
     const user = await Auth.currentAuthenticatedUser();
     const newMessage = await DataStore.save(
@@ -131,17 +149,82 @@ const InputBox = ({ chatRoom }) => {
     resetFields();
   };
 
-  const getImageBlob = async () => {
-    if (!image) {
-      return null;
-    }
-    const response = await fetch(image);
+  const getBlob = async (uri: string) => {
+    const response = await fetch(uri);
     const blob = await response.blob();
     return blob;
   };
 
+  //Audio
+
+  async function startRecording() {
+    try {
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      console.log("Starting recording..");
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      setRecording(recording);
+      console.log("Recording started");
+    } catch (err) {
+      console.error("Failed to start recording", err);
+    }
+  }
+
+  async function stopRecording() {
+    if (!recording) {
+      return;
+    }
+    console.log("Stopping recording..");
+    setRecording(null);
+
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+    });
+
+    await recording.stopAndUnloadAsync();
+    const uri = recording.getURI();
+    console.log("Recording stopped and stored at", uri);
+    if (!uri) {
+      return;
+    }
+
+    setSoundURI(uri);
+  }
+
+  const sendAudio = async () => {
+    if (!soundURI) {
+      return;
+    }
+    const uriParts = soundURI.split(".");
+    const extension = uriParts[uriParts.length - 1];
+    const blob = await getBlob(soundURI);
+    const { key } = await Storage.put(`${uuidv4()}.${extension}`, blob, {
+      progressCallback,
+    });
+
+    const user = await Auth.currentAuthenticatedUser();
+    const newMessage = await DataStore.save(
+      new Message({
+        content: message,
+        audio: key,
+        userID: user.attributes.sub,
+        chatroomID: chatRoom.id,
+      })
+    );
+
+    updateLastMessage(newMessage);
+    resetFields();
+  };
+
   return (
     <View style={[styles.row, { height: isEmojiOpen ? "67%" : "auto" }]}>
+      {soundURI && <AudioPlayer soundURI={soundURI} />}
       <View style={styles.container}>
         <View style={styles.mainContainer}>
           <Pressable
@@ -242,10 +325,16 @@ const InputBox = ({ chatRoom }) => {
         </View>
         <TouchableOpacity onPress={onPress}>
           <View style={styles.buttonContainer}>
-            {message || image ? (
+            {message || image || soundURI ? (
               <MaterialIcons name="send" size={24} color="white" />
             ) : (
-              <FontAwesome name="microphone" size={24} color="white" />
+              <Pressable onPressIn={startRecording} onPressOut={stopRecording}>
+                <FontAwesome
+                  name={"microphone"}
+                  size={24}
+                  color={recording ? "red" : "white"}
+                />
+              </Pressable>
             )}
           </View>
         </TouchableOpacity>
@@ -259,9 +348,27 @@ const InputBox = ({ chatRoom }) => {
           theme={"white"}
         />
       )}
+
       {image && (
         <View style={styles.imageContainer}>
           <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "flex-start",
+              alignSelf: "flex-end",
+            }}
+          >
+            <View
+              style={{
+                height: 5,
+                borderRadius: 5,
+                backgroundColor: Colors.light.tint,
+                width: `${progress * 100}%`,
+              }}
+            ></View>
+          </View>
+
           <Pressable>
             <AntDesign
               name="close"
