@@ -33,7 +33,7 @@ const ChatRoomScreen = () => {
 
   useEffect(() => {
     const subscription = DataStore.observe(Message).subscribe((data) => {
-      console.log(data.model, data.opType, data.element);
+      // console.log(data.model, data.opType, data.element);
       if (data.model === Message && data.opType === "INSERT") {
         setMessages((existingMessages) => [data.element, ...existingMessages]);
       }

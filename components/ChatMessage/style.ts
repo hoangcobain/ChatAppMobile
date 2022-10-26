@@ -5,12 +5,14 @@ const styles = StyleSheet.create({
     padding: 10,
     // width: 300, // luu y chinh box
     // marginLeft: 50, // luu y chinh box
+    flexDirection: "row",
   },
   messageBox: {
     backgroundColor: "#e5e5e5",
     marginRight: 50,
     borderRadius: 5,
     padding: 10,
+    flex: 1,
   },
   name: {
     color: Colors.light.tint,
@@ -23,6 +25,10 @@ const styles = StyleSheet.create({
   time: {
     alignSelf: "flex-end",
     color: "grey",
+  },
+  checkIcon: {
+    alignSelf: "flex-end",
+    marginLeft: 4,
   },
 });
 

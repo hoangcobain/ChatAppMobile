@@ -7,22 +7,43 @@ import { Auth, DataStore, Storage } from "aws-amplify";
 import { User } from "../../src/models";
 import { S3Image } from "aws-amplify-react-native";
 import AudioPlayer from "../AudioPlayer";
+import { AntDesign } from "@expo/vector-icons";
+import { Message as MessageModel } from "../../src/models";
 
 export type ChatMessageProps = {
   messages: Message;
 };
 
 const ChatMessage = (props: ChatMessageProps) => {
-  const { messages } = props;
+  // const { messages } = props;
   const { width } = useWindowDimensions();
 
+  const [messages, setMessage] = useState<MessageModel>(props.messages);
   const [user, setUser] = useState<User | undefined>();
-  const [isMe, setIsMe] = useState<boolean>(false);
+  const [isMe, setIsMe] = useState<boolean | null>(null);
   const [soundURI, setSoundURI] = useState<any>(null);
 
   useEffect(() => {
     DataStore.query(User, messages.userID).then(setUser);
   }, []);
+
+  useEffect(() => {
+    console.log(messages.id);
+
+    const subscription = DataStore.observe(MessageModel, messages.id).subscribe(
+      (data) => {
+        // console.log(data.model, data.opType, data.element);
+        if (data.model === MessageModel && data.opType === "UPDATE") {
+          setMessage((message) => ({ ...message, ...data.element }));
+        }
+      }
+    );
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    setAsRead();
+  }, [isMe, messages]);
 
   useEffect(() => {
     if (messages.audio) {
@@ -40,6 +61,16 @@ const ChatMessage = (props: ChatMessageProps) => {
     };
     checkIfMe();
   }, [user]);
+
+  const setAsRead = async () => {
+    if (isMe === false && messages.status !== "READ") {
+      await DataStore.save(
+        MessageModel.copyOf(messages, (updated) => {
+          updated.status = "READ";
+        })
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -59,7 +90,7 @@ const ChatMessage = (props: ChatMessageProps) => {
           <View style={{ marginBottom: 5 }}>
             <S3Image
               imgKey={messages.image}
-              style={{ width: width * 0.75, aspectRatio: 4 / 3 }}
+              style={{ width: width * 0.7, aspectRatio: 4 / 3 }}
               resizeMode="contain"
             />
           </View>
@@ -72,6 +103,16 @@ const ChatMessage = (props: ChatMessageProps) => {
           </Text>
         )}
       </View>
+      {isMe && !!messages.status && messages.status !== "SENT" && (
+        <AntDesign
+          name={
+            messages.status === "DELIVERED" ? "checkcircleo" : "checkcircle"
+          }
+          size={15}
+          color="gray"
+          style={styles.checkIcon}
+        />
+      )}
     </View>
   );
 };
