@@ -28,8 +28,6 @@ const ChatMessage = (props: ChatMessageProps) => {
   }, []);
 
   useEffect(() => {
-    console.log(messages.id);
-
     const subscription = DataStore.observe(MessageModel, messages.id).subscribe(
       (data) => {
         // console.log(data.model, data.opType, data.element);

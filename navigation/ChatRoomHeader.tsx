@@ -14,6 +14,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
+import moment from "moment";
 
 const ChatRoomHeader = ({ id }) => {
   const { width } = useWindowDimensions();
@@ -33,6 +34,21 @@ const ChatRoomHeader = ({ id }) => {
     };
     fetchUsers();
   }, []);
+
+  const getLastOnLineText = () => {
+    if (!user?.lastOnlineAt) {
+      return null;
+    }
+    // if lastOnlineAt is less than 5 minutes ago show him online
+    const lastOnlineDiffMS = moment().diff(moment(user?.lastOnlineAt));
+    if (lastOnlineDiffMS < 5 * 60 * 1000) {
+      // less than 5 minutes
+      return "online";
+    } else {
+      return `Last seen ${moment(user.lastOnlineAt).fromNow()}`;
+    }
+  };
+
   return (
     <View
       style={{
@@ -48,13 +64,23 @@ const ChatRoomHeader = ({ id }) => {
           source={{ uri: user?.imageUri }}
           style={{ width: 35, height: 35, borderRadius: 30, marginRight: 5 }}
         />
-        <Text
-          style={{ fontSize: 18, fontWeight: "bold", color: "white", flex: 1 }}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {user?.name}
-        </Text>
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              color: "white",
+              flex: 1,
+            }}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {user?.name}
+          </Text>
+          <Text style={{ color: "white", flex: 1 }} numberOfLines={1}>
+            {getLastOnLineText()}
+          </Text>
+        </View>
       </View>
 
       <View style={styles.icon_info}>
