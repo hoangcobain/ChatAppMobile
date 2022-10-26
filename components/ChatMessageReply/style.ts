@@ -30,14 +30,14 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     marginLeft: 4,
   },
-  // repliedBox: {
-  //   padding: 10,
-  //   backgroundColor: "white",
-  //   borderRadius: 5,
-  //   marginBottom: 5,
-  //   borderColor: "lightgray",
-  //   borderWidth: 1,
-  // },
+  repliedBox: {
+    padding: 10,
+    backgroundColor: "white",
+    borderRadius: 5,
+    marginBottom: 5,
+    borderColor: "lightgray",
+    borderWidth: 1,
+  },
 });
 
 export default styles;

@@ -9,7 +9,7 @@ import {
   Alert,
   CameraRoll,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./style";
 import {
   FontAwesome5,
@@ -29,8 +29,10 @@ import { v4 as uuidv4 } from "uuid";
 import Colors from "../../constants/Colors";
 import { Audio, AVPlaybackStatus } from "expo-av";
 import AudioPlayer from "../AudioPlayer";
+import ChatMessage from "../ChatMessage";
+import { User } from "../../src/models";
 
-const InputBox = ({ chatRoom }) => {
+const InputBox = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
   const [message, setMessage] = useState("");
   const [isEmojiOpen, setIsEmojiOpen] = useState(false);
   const [image, setImage] = useState(null);
@@ -55,6 +57,7 @@ const InputBox = ({ chatRoom }) => {
         content: message,
         userID: user.attributes.sub,
         chatroomID: chatRoom.id,
+        replyToMessageID: messageReplyTo?.id,
       })
     );
 
@@ -88,6 +91,7 @@ const InputBox = ({ chatRoom }) => {
     setImage(null);
     setProgress(0);
     setSoundURI(null);
+    removeMessageReplyTo();
   };
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -142,6 +146,7 @@ const InputBox = ({ chatRoom }) => {
         image: key,
         userID: user.attributes.sub,
         chatroomID: chatRoom.id,
+        replyToMessageID: messageReplyTo?.id,
       })
     );
 
@@ -216,6 +221,7 @@ const InputBox = ({ chatRoom }) => {
         userID: user.attributes.sub,
         chatroomID: chatRoom.id,
         status: "SENT",
+        replyToMessageID: messageReplyTo?.id,
       })
     );
 
@@ -225,6 +231,29 @@ const InputBox = ({ chatRoom }) => {
 
   return (
     <View style={[styles.row, { height: isEmojiOpen ? "67%" : "auto" }]}>
+      {messageReplyTo && (
+        <View
+          style={{
+            backgroundColor: "lightgray",
+            flexDirection: "row",
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
+          }}
+        >
+          <View style={{ flex: 1 }}>
+            <Text style={{ margin: 5, fontSize: 14 }}>Reply to:</Text>
+            <ChatMessage messages={messageReplyTo} />
+          </View>
+          <Pressable onPress={() => removeMessageReplyTo()}>
+            <AntDesign
+              name="close"
+              size={24}
+              color="black"
+              style={{ margin: 5 }}
+            />
+          </Pressable>
+        </View>
+      )}
       {soundURI && <AudioPlayer soundURI={soundURI} />}
       <View style={styles.container}>
         <View style={styles.mainContainer}>

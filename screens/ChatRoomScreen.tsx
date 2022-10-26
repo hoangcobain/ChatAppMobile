@@ -18,6 +18,7 @@ import InputBox from "../components/InputBox";
 
 const ChatRoomScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [messageReplyTo, setMessageReplyTo] = useState<Message | null>(null);
   const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
 
   const route = useRoute();
@@ -39,7 +40,7 @@ const ChatRoomScreen = () => {
       }
     });
     return () => subscription.unsubscribe();
-  });
+  }, []);
 
   const fetchedChatRoom = async () => {
     if (!route.params?.id) return;
@@ -72,10 +73,19 @@ const ChatRoomScreen = () => {
     <View style={{ width: "100%", height: "100%" }}>
       <FlatList
         data={messages}
-        renderItem={({ item }) => <ChatMessage messages={item} />}
+        renderItem={({ item }) => (
+          <ChatMessage
+            messages={item}
+            setAsMessageReply={() => setMessageReplyTo(item)}
+          />
+        )}
         inverted
       />
-      <InputBox chatRoom={chatRoom} />
+      <InputBox
+        chatRoom={chatRoom}
+        messageReplyTo={messageReplyTo}
+        removeMessageReplyTo={() => setMessageReplyTo(null)}
+      />
     </View>
   );
 };

@@ -8,27 +8,23 @@ import {
   View,
 } from "react-native";
 import { Message } from "../../types";
-import styles from "../ChatMessage/style";
+import styles from "../ChatMessageReply/style";
 import { Auth, DataStore, Storage } from "aws-amplify";
 import { User } from "../../src/models";
 import { S3Image } from "aws-amplify-react-native";
 import AudioPlayer from "../AudioPlayer";
 import { AntDesign } from "@expo/vector-icons";
 import { Message as MessageModel } from "../../src/models";
-import ChatMessageReply from "../ChatMessageReply";
 
 export type ChatMessageProps = {
   messages: Message;
 };
 
-const ChatMessage = (props: ChatMessageProps) => {
+const ChatMessageReply = (props: ChatMessageProps) => {
   // const { messages } = props;
-  const { setAsMessageReply, messages: propMessage } = props;
+  const { messages: propMessage } = props;
   const { width } = useWindowDimensions();
 
-  const [repliedTo, setRepliedTo] = useState<MessageModel | undefined>(
-    undefined
-  );
   const [messages, setMessage] = useState<MessageModel>(propMessage);
   const [user, setUser] = useState<User | undefined>();
   const [isMe, setIsMe] = useState<boolean | null>(null);
@@ -41,30 +37,6 @@ const ChatMessage = (props: ChatMessageProps) => {
   useEffect(() => {
     setMessage(propMessage);
   }, [propMessage]);
-
-  useEffect(() => {
-    if (messages?.replyToMessageID) {
-      DataStore.query(MessageModel, messages.replyToMessageID).then(
-        setRepliedTo
-      );
-    }
-  }, [messages]);
-
-  useEffect(() => {
-    const subscription = DataStore.observe(MessageModel, messages.id).subscribe(
-      (data) => {
-        // console.log(data.model, data.opType, data.element);
-        if (data.model === MessageModel && data.opType === "UPDATE") {
-          setMessage((message) => ({ ...message, ...data.element }));
-        }
-      }
-    );
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    setAsRead();
-  }, [isMe, messages]);
 
   useEffect(() => {
     if (messages.audio) {
@@ -83,34 +55,24 @@ const ChatMessage = (props: ChatMessageProps) => {
     checkIfMe();
   }, [user]);
 
-  const setAsRead = async () => {
-    if (isMe === false && messages.status !== "READ") {
-      await DataStore.save(
-        MessageModel.copyOf(messages, (updated) => {
-          updated.status = "READ";
-        })
-      );
-    }
-  };
-
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onLongPress={!isMe ? setAsMessageReply : null}
-    >
+    <View style={styles.container}>
       <View
         style={[
           styles.messageBox,
           {
             backgroundColor: isMe ? "#c9e4fc" : "white",
-            marginLeft: isMe ? 50 : 0,
-            marginRight: isMe ? 0 : 50,
+            marginLeft: isMe ? -5 : 0,
+            marginRight: isMe ? 0 : 5,
           },
           { padding: soundURI ? 0 : 10 },
         ]}
       >
-        {repliedTo && <ChatMessageReply messages={repliedTo} />}
-        {!isMe && <Text style={styles.name}>{user?.name}</Text>}
+        {!isMe && (
+          <Text style={styles.name} numberOfLines={1}>
+            {user?.name}
+          </Text>
+        )}
         {messages.image && (
           <View style={{ marginBottom: 5 }}>
             <S3Image
@@ -128,7 +90,7 @@ const ChatMessage = (props: ChatMessageProps) => {
           </Text>
         )}
       </View>
-      {isMe && !!messages.status && messages.status !== "SENT" && (
+      {/* {isMe && !!messages.status && messages.status !== "SENT" && (
         <AntDesign
           name={
             messages.status === "DELIVERED" ? "checkcircleo" : "checkcircle"
@@ -137,9 +99,9 @@ const ChatMessage = (props: ChatMessageProps) => {
           color="gray"
           style={styles.checkIcon}
         />
-      )}
-    </TouchableOpacity>
+      )} */}
+    </View>
   );
 };
 
-export default ChatMessage;
+export default ChatMessageReply;
