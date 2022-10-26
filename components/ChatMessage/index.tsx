@@ -106,11 +106,22 @@ const ChatMessage = (props: ChatMessageProps) => {
             marginLeft: isMe ? 50 : 0,
             marginRight: isMe ? 0 : 50,
           },
-          { padding: soundURI ? 0 : 10 },
         ]}
       >
         {repliedTo && <ChatMessageReply messages={repliedTo} />}
-        {!isMe && <Text style={styles.name}>{user?.name}</Text>}
+        {!isMe && (
+          <Text
+            style={[
+              styles.name,
+              {
+                paddingTop: soundURI ? 10 : 0,
+                paddingLeft: soundURI ? 11 : 0,
+              },
+            ]}
+          >
+            {user?.name}
+          </Text>
+        )}
         {messages.image && (
           <View style={{ marginBottom: 5 }}>
             <S3Image
@@ -121,12 +132,27 @@ const ChatMessage = (props: ChatMessageProps) => {
           </View>
         )}
         {soundURI && <AudioPlayer soundURI={soundURI} />}
-        <Text style={styles.message}>{messages.content}</Text>
-        {!soundURI && (
-          <Text style={styles.time}>
+        <Text
+          style={[
+            styles.message,
+            { marginLeft: soundURI ? 10 : 0, marginBottom: soundURI ? 10 : 0 },
+          ]}
+        >
+          {messages.content}
+        </Text>
+        {
+          <Text
+            style={[
+              styles.time,
+              {
+                paddingBottom: soundURI ? 10 : 0,
+                paddingRight: soundURI ? 10 : 0,
+              },
+            ]}
+          >
             {moment(messages.createdAt).fromNow()}
           </Text>
-        )}
+        }
       </View>
       {isMe && !!messages.status && messages.status !== "SENT" && (
         <AntDesign

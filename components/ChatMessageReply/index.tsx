@@ -69,7 +69,16 @@ const ChatMessageReply = (props: ChatMessageProps) => {
         ]}
       >
         {!isMe && (
-          <Text style={styles.name} numberOfLines={1}>
+          <Text
+            style={[
+              styles.name,
+              {
+                paddingTop: soundURI ? 10 : 0,
+                paddingLeft: soundURI ? 11 : 0,
+              },
+            ]}
+            numberOfLines={1}
+          >
             {user?.name}
           </Text>
         )}
@@ -77,13 +86,20 @@ const ChatMessageReply = (props: ChatMessageProps) => {
           <View style={{ marginBottom: 5 }}>
             <S3Image
               imgKey={messages.image}
-              style={{ width: width * 0.7, aspectRatio: 4 / 3 }}
+              style={{ width: width * 0.65, aspectRatio: 4 / 3 }}
               resizeMode="contain"
             />
           </View>
         )}
         {soundURI && <AudioPlayer soundURI={soundURI} />}
-        <Text style={styles.message}>{messages.content}</Text>
+        <Text
+          style={[
+            styles.message,
+            { marginLeft: soundURI ? 10 : 0, marginBottom: soundURI ? 10 : 0 },
+          ]}
+        >
+          {messages.content}
+        </Text>
         {!soundURI && (
           <Text style={styles.time}>
             {moment(messages.createdAt).fromNow()}
