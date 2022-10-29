@@ -38,6 +38,7 @@ import {
 } from "@expo/vector-icons";
 import { View } from "../components/Themed";
 import ContactsScreen from "../screens/ContactsScreen";
+import UsersScreen from "../screens/UsersScreen";
 import MenuCustom from "../components/MenuItem";
 import { FA5Style } from "@expo/vector-icons/build/FontAwesome5";
 import ChatRoomHeader from "./ChatRoomHeader";
@@ -110,6 +111,11 @@ function RootNavigator() {
         name="Contacts"
         component={ContactsScreen}
         options={{ title: "Contacts" }}
+      />
+      <Stack.Screen
+        name="Users"
+        component={UsersScreen}
+        options={{ title: "Group" }}
       />
       <Stack.Screen
         name="NotFound"

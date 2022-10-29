@@ -14,19 +14,27 @@ export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchChatRooms = async () => {
+    setLoading(true);
+    const userData = await Auth.currentAuthenticatedUser();
+    const chatRooms = (await DataStore.query(ChatRoomUser))
+      .filter(
+        (chatRoomUser) => chatRoomUser.user.id === userData.attributes.sub
+      )
+      .map((chatRoomUser) => chatRoomUser.chatRoom);
+
+    // console.log(chatRooms);
+    const sortedRooms = chatRooms.sort(
+      (r1, r2) => new Date(r2.updatedAt) - new Date(r1.updatedAt)
+    );
+
+    setChatRooms(sortedRooms);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchChatRooms = async () => {
-      const userData = await Auth.currentAuthenticatedUser();
-      const chatRooms = (await DataStore.query(ChatRoomUser))
-        .filter(
-          (chatRoomUser) => chatRoomUser.user.id === userData.attributes.sub
-        )
-        .map((chatRoomUser) => chatRoomUser.chatRoom);
-
-      // console.log(chatRooms);
-      setChatRooms(chatRooms);
-    };
     fetchChatRooms();
   }, []);
 
@@ -38,6 +46,8 @@ export default function TabOneScreen({
         data={chatRooms}
         renderItem={({ item }) => <ChatListItem chatRoom={item} />}
         keyExtractor={(item) => item.id}
+        refreshing={loading}
+        onRefresh={fetchChatRooms}
       />
       {/* <ChatListItem chatRoom={chatRooms[0]} /> */}
       <NewMessageButton />

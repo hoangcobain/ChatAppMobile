@@ -13,6 +13,7 @@ import styles from "./style";
 import { useNavigation } from "@react-navigation/native";
 import { Auth, DataStore } from "aws-amplify";
 import { ChatRoomUser, Message, User } from "../../src/models";
+import { ChatRoom as ChatRoomModel } from "../../src/models";
 
 export type ChatListItemProps = {
   chatRoom: ChatRoom;
@@ -49,10 +50,28 @@ const ChatListItem = (props: ChatListItemProps) => {
     DataStore.query(Message, chatRoom.chatRoomLastMessageId).then(
       setLastMessage
     );
-  }, []);
+  }, [lastMessage]);
 
   // const user = chatRoom.users[1];
   // console.log(user);
+
+  // useEffect(() => {
+  //   const subscription = DataStore.observe(
+  //     Message,
+  //     chatRoom.chatRoomLastMessageId
+  //   ).subscribe((data) => {
+  //     console.log(data.model, data.opType, data.element);
+  //     if (data.model === Message && data.opType === "UPDATE") {
+  //       setLastMessage((message) => ({
+  //         ...(message || {}),
+  //         ...data.element,
+  //       }));
+  //     }
+  //   });
+  //   console.log(lastMessage);
+
+  //   return () => subscription.unsubscribe();
+  // }, [chatRoom.chatRoomLastMessageId]);
 
   if (!user) {
     return <ActivityIndicator />;
@@ -66,7 +85,10 @@ const ChatListItem = (props: ChatListItemProps) => {
     <TouchableWithoutFeedback onPress={onClick}>
       <View style={styles.container}>
         <View style={styles.leftContainer}>
-          <Image source={{ uri: user.imageUri }} style={styles.avatar} />
+          <Image
+            source={{ uri: chatRoom.imageUri || user.imageUri }}
+            style={styles.avatar}
+          />
           {!!chatRoom.newMessages && (
             <View style={styles.badgeContainer}>
               <Text style={styles.badgeText}>{chatRoom.newMessages}</Text>
@@ -74,7 +96,7 @@ const ChatListItem = (props: ChatListItemProps) => {
           )}
           <View style={styles.midContainer}>
             <Text style={styles.username} numberOfLines={1}>
-              {user.name}
+              {chatRoom.name || user.name}
             </Text>
             {!chatRoom.lastMessage && (
               <Text style={styles.lastMessage} numberOfLines={1}>

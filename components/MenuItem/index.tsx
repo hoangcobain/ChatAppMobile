@@ -6,8 +6,15 @@ import { Menu, MenuItem } from "react-native-material-menu";
 import Colors from "../../constants/Colors";
 import styles from "./style";
 import { Auth, DataStore } from "aws-amplify";
+import { useNavigation } from "@react-navigation/native";
 
 const MenuCustom = () => {
+  const navigation = useNavigation();
+
+  const navigateToGroup = () => {
+    navigation.navigate("Users");
+  };
+
   const [visible, setVisible] = useState(false);
 
   const hideMenu = () => setVisible(false);
@@ -36,6 +43,7 @@ const MenuCustom = () => {
         onRequestClose={hideMenu}
       >
         <MenuItem onPress={logOut}>Log out</MenuItem>
+        <MenuItem onPress={navigateToGroup}>Create chat group</MenuItem>
         <MenuItem disabled>Some other tasks</MenuItem>
       </Menu>
     </View>
