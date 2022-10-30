@@ -25,6 +25,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   const [lastMessage, setLastMessage] = useState<Message | undefined>(
     undefined
   );
+  const [isLoading, setIsLoading] = useState(true);
   const { chatRoom } = props;
 
   const navigation = useNavigation();
@@ -39,6 +40,7 @@ const ChatListItem = (props: ChatListItemProps) => {
 
       const authUser = await Auth.currentAuthenticatedUser();
       setUser(chatRoomUsers.find((user) => user.id != authUser.attributes.sub));
+      setIsLoading(false);
     };
     fetchUsers();
   }, []);
@@ -73,7 +75,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   //   return () => subscription.unsubscribe();
   // }, [chatRoom.chatRoomLastMessageId]);
 
-  if (!user) {
+  if (isLoading) {
     return <ActivityIndicator />;
   }
 
