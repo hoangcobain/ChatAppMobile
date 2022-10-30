@@ -48,7 +48,7 @@ export default function Users() {
     //Create a chat room
     const newChatRoomData = {
       newMessages: 0,
-      admin: dbUser,
+      Admin: dbUser,
     };
     if (users.length > 1) {
       newChatRoomData.name = "New group";

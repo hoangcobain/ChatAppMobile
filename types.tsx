@@ -23,6 +23,7 @@ export type RootStackParamList = {
   ChatRoom: undefined;
   Contacts: undefined;
   Users: undefined;
+  GroupInfoScreen: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

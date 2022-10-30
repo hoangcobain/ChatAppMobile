@@ -22,6 +22,7 @@ const MenuCustom = () => {
   const showMenu = () => setVisible(true);
 
   const logOut = () => {
+    // DataStore.clear();
     Auth.signOut();
   };
 

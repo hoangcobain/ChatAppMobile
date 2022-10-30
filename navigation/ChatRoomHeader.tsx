@@ -4,6 +4,8 @@ import {
   View,
   Image,
   useWindowDimensions,
+  Pressable,
+  TouchableHighlight,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Colors from "../constants/Colors";
@@ -15,12 +17,16 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import moment from "moment";
+import { useNavigation } from "@react-navigation/native";
 
 const ChatRoomHeader = ({ id }) => {
   const { width } = useWindowDimensions();
   const [user, setUser] = useState<User | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
+
+  const navagitaion = useNavigation();
+
   if (!id == null) {
     return;
   }
@@ -71,6 +77,10 @@ const ChatRoomHeader = ({ id }) => {
     return allUsers.length > 2;
   };
 
+  const openInfo = () => {
+    navagitaion.navigate("GroupInfoScreen", { id });
+  };
+
   return (
     <View
       style={{
@@ -81,7 +91,7 @@ const ChatRoomHeader = ({ id }) => {
         alignItems: "center",
       }}
     >
-      <View style={styles.info}>
+      <Pressable onPress={isGroup() ? openInfo : null} style={styles.info}>
         <Image
           source={{
             uri: chatRoom?.imageUri || user?.imageUri,
@@ -105,7 +115,7 @@ const ChatRoomHeader = ({ id }) => {
             {isGroup() ? getUsernames() : getLastOnLineText()}
           </Text>
         </View>
-      </View>
+      </Pressable>
 
       <View style={styles.icon_info}>
         <MaterialIcons

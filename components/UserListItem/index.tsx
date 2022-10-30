@@ -11,19 +11,26 @@ import { User } from "../../src/models";
 // import { User } from "../../types";
 import styles from "./style";
 
-const UserListItem = ({ user, onPress, isSelected }) => {
+const UserListItem = ({
+  user,
+  onPress,
+  onLongPress,
+  isSelected,
+  isAdmin = false,
+}) => {
   // const { user } = props;
 
   // console.log(user);
 
   return (
-    <TouchableWithoutFeedback onPress={onPress}>
+    <TouchableWithoutFeedback onPress={onPress} onLongPress={onLongPress}>
       <View style={styles.container}>
         <View style={styles.leftContainer}>
           <Image source={{ uri: user.imageUri }} style={styles.avatar} />
           <View style={styles.midContainer}>
             <Text style={styles.username}>{user.name}</Text>
-            <Text style={styles.status}>{user.status}</Text>
+            {/* <Text style={styles.status}>{user.status}</Text> */}
+            {isAdmin && <Text style={{ color: "red" }}>Admin</Text>}
           </View>
         </View>
         {isSelected !== undefined && (

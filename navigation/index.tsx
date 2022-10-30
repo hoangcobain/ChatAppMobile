@@ -42,6 +42,7 @@ import UsersScreen from "../screens/UsersScreen";
 import MenuCustom from "../components/MenuItem";
 import { FA5Style } from "@expo/vector-icons/build/FontAwesome5";
 import ChatRoomHeader from "./ChatRoomHeader";
+import GroupInfoScreen from "../screens/GroupInfoScreen/GroupInfoScreen";
 
 export default function Navigation({
   colorScheme,
@@ -116,6 +117,11 @@ function RootNavigator() {
         name="Users"
         component={UsersScreen}
         options={{ title: "Group" }}
+      />
+      <Stack.Screen
+        name="GroupInfoScreen"
+        component={GroupInfoScreen}
+        options={{ title: "GroupInfoScreen" }}
       />
       <Stack.Screen
         name="NotFound"
