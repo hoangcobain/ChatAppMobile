@@ -1,6 +1,7 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
 import {
+  Alert,
   Pressable,
   Text,
   TouchableOpacity,
@@ -16,6 +17,7 @@ import AudioPlayer from "../AudioPlayer";
 import { AntDesign } from "@expo/vector-icons";
 import { Message as MessageModel } from "../../src/models";
 import ChatMessageReply from "../ChatMessageReply";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 
 export type ChatMessageProps = {
   messages: Message;
@@ -33,6 +35,9 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [user, setUser] = useState<User | undefined>();
   const [isMe, setIsMe] = useState<boolean | null>(null);
   const [soundURI, setSoundURI] = useState<any>(null);
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  const { showActionSheetWithOptions } = useActionSheet();
 
   useEffect(() => {
     DataStore.query(User, messages.userID).then(setUser);
@@ -54,8 +59,12 @@ const ChatMessage = (props: ChatMessageProps) => {
     const subscription = DataStore.observe(MessageModel, messages.id).subscribe(
       (data) => {
         // console.log(data.model, data.opType, data.element);
-        if (data.model === MessageModel && data.opType === "UPDATE") {
-          setMessage((message) => ({ ...message, ...data.element }));
+        if (data.model === MessageModel) {
+          if (data.opType === "UPDATE") {
+            setMessage((message) => ({ ...message, ...data.element }));
+          } else if (data.opType === "DELETE") {
+            setIsDeleted(true);
+          }
         }
       }
     );
@@ -93,11 +102,55 @@ const ChatMessage = (props: ChatMessageProps) => {
     }
   };
 
+  const deleteMessage = async () => {
+    await DataStore.delete(messages);
+  };
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Confirm delete",
+      "Are you sure you want to delete the message?",
+      [
+        {
+          text: "Delete",
+          onPress: deleteMessage,
+          style: "destructive",
+        },
+        {
+          text: "Cancel",
+        },
+      ]
+    );
+  };
+
+  const onActionPress = (index) => {
+    if (index === 0) {
+      setAsMessageReply();
+    } else if (index === 1) {
+      confirmDelete();
+    }
+  };
+
+  const openActionMenu = () => {
+    const options = ["Reply"];
+    if (isMe) {
+      options.push("Delete");
+    }
+    options.push("Cancel");
+    const destructiveButtonIndex = 1;
+    const cancelButtonIndex = 2;
+    showActionSheetWithOptions(
+      {
+        options,
+        destructiveButtonIndex,
+        cancelButtonIndex,
+      },
+      onActionPress
+    );
+  };
+
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onLongPress={!isMe ? setAsMessageReply : null}
-    >
+    <TouchableOpacity style={styles.container} onLongPress={openActionMenu}>
       <View
         style={[
           styles.messageBox,
@@ -138,7 +191,7 @@ const ChatMessage = (props: ChatMessageProps) => {
             { marginLeft: soundURI ? 10 : 0, marginBottom: soundURI ? 10 : 0 },
           ]}
         >
-          {messages.content}
+          {isDeleted ? "Message deleted" : messages.content}
         </Text>
         {
           <Text

@@ -66,6 +66,7 @@ const ChatRoomScreen = () => {
     );
     setMessages(fetchedMessages);
   };
+
   if (!chatRoom) {
     return <ActivityIndicator />;
   }

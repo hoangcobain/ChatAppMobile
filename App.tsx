@@ -10,6 +10,7 @@ import Navigation from "./navigation";
 import { useEffect, useState } from "react";
 import { Message, User } from "./src/models";
 import moment from "moment";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 Amplify.configure(awsconfig);
 
@@ -95,7 +96,10 @@ function App() {
   } else {
     return (
       <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} />
+        <ActionSheetProvider>
+          <Navigation colorScheme={colorScheme} />
+        </ActionSheetProvider>
+
         <StatusBar />
       </SafeAreaProvider>
     );
