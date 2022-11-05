@@ -8,6 +8,7 @@ import {
   PermissionsAndroid,
   Alert,
   CameraRoll,
+  FlatList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import styles from "./style";
@@ -31,11 +32,12 @@ import { Audio, AVPlaybackStatus } from "expo-av";
 import AudioPlayer from "../AudioPlayer";
 import ChatMessage from "../ChatMessage";
 import { User } from "../../src/models";
+import "react-native-get-random-values";
 
 const InputBox = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
   const [message, setMessage] = useState("");
   const [isEmojiOpen, setIsEmojiOpen] = useState(false);
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState([]);
   const [startCamera, setStartCamera] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [capturedImage, setCapturedImage] = useState<any>(null);
@@ -73,9 +75,20 @@ const InputBox = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
     );
   };
 
-  const onPress = () => {
-    if (image) {
-      sendImage();
+  const onPress = async () => {
+    if (image.length > 0) {
+      const user = await Auth.currentAuthenticatedUser();
+      const newMessage = await DataStore.save(
+        new Message({
+          content: message,
+          image: await Promise.all(image.map(uploadFile)),
+          userID: user.attributes.sub,
+          chatroomID: chatRoom.id,
+          replyToMessageID: messageReplyTo?.id,
+        })
+      );
+      updateLastMessage(newMessage);
+      resetFields();
     } else if (soundURI) {
       sendAudio();
     } else if (message) {
@@ -88,7 +101,7 @@ const InputBox = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
   const resetFields = () => {
     setMessage("");
     setIsEmojiOpen(false);
-    setImage(null);
+    setImage([]);
     setProgress(0);
     setSoundURI(null);
     removeMessageReplyTo();
@@ -97,15 +110,20 @@ const InputBox = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
+      allowsMultipleSelection: true,
+      // aspect: [4, 3],
       quality: 1,
     });
 
-    console.log(result);
+    // console.log(result);
 
     if (!result.cancelled) {
-      setImage(result.uri);
+      if (result.selected) {
+        // user selected multiple images
+        setImage(result.selected.map((asset) => asset.uri));
+      } else {
+        setImage([result.uri]);
+      }
     }
   };
 
@@ -130,28 +148,20 @@ const InputBox = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
     setProgress(progress.loaded / progress.total);
   };
 
-  const sendImage = async () => {
+  const uploadFile = async (fileUri) => {
     if (!image) {
       return;
     }
-    const blob = await getBlob(image);
-    const { key } = await Storage.put(`${uuidv4()}.png`, blob, {
-      progressCallback,
-    });
-
-    const user = await Auth.currentAuthenticatedUser();
-    const newMessage = await DataStore.save(
-      new Message({
-        content: message,
-        image: key,
-        userID: user.attributes.sub,
-        chatroomID: chatRoom.id,
-        replyToMessageID: messageReplyTo?.id,
-      })
-    );
-
-    updateLastMessage(newMessage);
-    resetFields();
+    try {
+      const blob = await getBlob(fileUri);
+      const key = `${uuidv4()}.png`;
+      await Storage.put(key, blob, {
+        progressCallback,
+      });
+      return key;
+    } catch (error) {
+      console.log("Error uploading file:", error);
+    }
   };
 
   const getBlob = async (uri: string) => {
@@ -231,6 +241,57 @@ const InputBox = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
 
   return (
     <View style={[styles.row, { height: isEmojiOpen ? "67%" : "auto" }]}>
+      {image.length > 0 && (
+        <View style={styles.attachmentsContainer}>
+          <FlatList
+            data={image}
+            horizontal
+            renderItem={({ item }) => (
+              <>
+                <Image source={{ uri: item }} style={styles.selectedImage} />
+                {/* <View
+            style={{
+              flex: 1,
+              justifyContent: "flex-start",
+              alignSelf: "flex-end",
+            }}
+          >
+            <View
+              style={{
+                height: 5,
+                borderRadius: 5,
+                backgroundColor: Colors.light.tint,
+                width: `${progress * 100}%`,
+              }}
+            ></View>
+          </View> */}
+
+                {/* <Pressable>
+            <AntDesign
+              name="close"
+              size={24}
+              color="black"
+              onPress={() => setImage(null)}
+              style={styles.removeSelectedImage}
+            />
+          </Pressable> */}
+                <MaterialIcons
+                  name="highlight-remove"
+                  onPress={() =>
+                    setImage((existingImages) =>
+                      existingImages.filter((img) => img !== item)
+                    )
+                  }
+                  size={22}
+                  color="gray"
+                  style={styles.removeSelectedImage}
+                />
+              </>
+            )}
+          />
+        </View>
+      )}
+
       {messageReplyTo && (
         <View
           style={{
@@ -377,37 +438,6 @@ const InputBox = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
           columns={8}
           theme={"white"}
         />
-      )}
-
-      {image && (
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "flex-start",
-              alignSelf: "flex-end",
-            }}
-          >
-            <View
-              style={{
-                height: 5,
-                borderRadius: 5,
-                backgroundColor: Colors.light.tint,
-                width: `${progress * 100}%`,
-              }}
-            ></View>
-          </View>
-
-          <Pressable>
-            <AntDesign
-              name="close"
-              size={24}
-              color="black"
-              onPress={() => setImage(null)}
-            />
-          </Pressable>
-        </View>
       )}
     </View>
   );

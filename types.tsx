@@ -24,6 +24,9 @@ export type RootStackParamList = {
   Contacts: undefined;
   Users: undefined;
   GroupInfoScreen: undefined;
+  StatusUserScreen: undefined;
+  UserInfoScreen: undefined;
+  AddContactsToGroupScreen: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

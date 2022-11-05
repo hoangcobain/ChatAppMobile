@@ -7,21 +7,25 @@ import { RootTabScreenProps } from "../types";
 // import users from "../data/Users";
 import ContactListItem from "../components/ContactListItem";
 import { User } from "../src/models";
+import { Auth } from "aws-amplify";
 
 export default function Contacts() {
   const [users, setUsers] = useState<User[]>([]);
 
-  useEffect(() => {
-    DataStore.query(User).then(setUsers);
-  });
-
   // useEffect(() => {
-  //   const fectchUsers = async () => {
-  //     const fectchUsers = await DataStore.query(User);
-  //     setUsers(fectchUsers);
-  //   };
-  //   fectchUsers();
-  // }, []);
+  //   DataStore.query(User).then(setUsers);
+  // });
+
+  useEffect(() => {
+    const fectchUsers = async () => {
+      const authUser = await Auth.currentAuthenticatedUser();
+      const fectchUsers = await DataStore.query(User);
+      setUsers(
+        fectchUsers.filter((user) => user.id !== authUser.attributes.sub)
+      );
+    };
+    fectchUsers();
+  }, []);
 
   return (
     <View style={styles.container}>

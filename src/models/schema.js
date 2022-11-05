@@ -33,10 +33,11 @@ export const schema = {
                 },
                 "image": {
                     "name": "image",
-                    "isArray": false,
+                    "isArray": true,
                     "type": "String",
                     "isRequired": false,
-                    "attributes": []
+                    "attributes": [],
+                    "isArrayNullable": true
                 },
                 "audio": {
                     "name": "audio",
@@ -464,5 +465,5 @@ export const schema = {
         }
     },
     "nonModels": {},
-    "version": "763962264c46cad6045c18a749b5f5bc"
+    "version": "b33e493ba0e345da1cbc41e7a6cc4a85"
 };

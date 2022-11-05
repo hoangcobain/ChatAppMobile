@@ -4,6 +4,8 @@ import {
   Pressable,
   Text,
   SafeAreaView,
+  TextInput,
+  Button,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import EditScreenInfo from "../components/EditScreenInfo";
@@ -13,19 +15,28 @@ import { RootTabScreenProps } from "../types";
 import UserListItem from "../components/UserListItem";
 import NewGroupButton from "../components/NewGroupButton";
 import { useNavigation } from "@react-navigation/native";
-import { Auth, DataStore } from "aws-amplify";
+import { Auth, DataStore, input } from "aws-amplify";
 import { ChatRoom, User, ChatRoomUser } from "../src/models";
 import Colors from "../constants/Colors";
+import InputBox from "../components/InputBox";
 
 export default function Users() {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [isNewGroup, setIsNewGroup] = useState(true);
+  const [inputGroupName, setInputGroupName] = useState("");
   const navigation = useNavigation();
 
   useEffect(() => {
-    DataStore.query(User).then(setUsers);
-  });
+    const fectchUsers = async () => {
+      const authUser = await Auth.currentAuthenticatedUser();
+      const fectchUsers = await DataStore.query(User);
+      setUsers(
+        fectchUsers.filter((user) => user.id !== authUser.attributes.sub)
+      );
+    };
+    fectchUsers();
+  }, []);
 
   const addUserToChatRoom = async (user, chatRoom) => {
     DataStore.save(
@@ -51,7 +62,11 @@ export default function Users() {
       Admin: dbUser,
     };
     if (users.length > 1) {
-      newChatRoomData.name = "New group";
+      if (!inputGroupName) {
+        newChatRoomData.name = "New group";
+      } else {
+        newChatRoomData.name = inputGroupName;
+      }
       newChatRoomData.imageUri =
         "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/group.jpeg";
     }
@@ -93,6 +108,15 @@ export default function Users() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.viewNameGroup}>
+        <TextInput
+          placeholder="Input group name..."
+          onChangeText={(text) => setInputGroupName(text)}
+          value={inputGroupName}
+          style={styles.inputNameGroup}
+        ></TextInput>
+      </View>
+
       <FlatList
         nestedScrollEnabled
         style={{ width: "100%" }}
@@ -111,7 +135,11 @@ export default function Users() {
       />
 
       {isNewGroup && (
-        <Pressable style={styles.button} onPress={saveGroup}>
+        <Pressable
+          style={styles.button}
+          onPress={saveGroup}
+          disabled={selectedUsers.length < 1}
+        >
           <Text style={styles.buttonText}>
             Save group ({selectedUsers.length})
           </Text>
@@ -140,5 +168,19 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontWeight: "bold",
+  },
+  viewNameGroup: {
+    width: "95%",
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  inputNameGroup: {
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    borderColor: "lightgray",
+    width: "100%",
+    flex: 1,
   },
 });

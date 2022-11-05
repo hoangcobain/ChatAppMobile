@@ -2,6 +2,7 @@ import moment from "moment";
 import React, { useState, useEffect } from "react";
 import {
   Alert,
+  Image,
   Pressable,
   Text,
   TouchableOpacity,
@@ -18,6 +19,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { Message as MessageModel } from "../../src/models";
 import ChatMessageReply from "../ChatMessageReply";
 import { useActionSheet } from "@expo/react-native-action-sheet";
+import ImageView from "react-native-image-viewing";
 
 export type ChatMessageProps = {
   messages: Message;
@@ -36,12 +38,31 @@ const ChatMessage = (props: ChatMessageProps) => {
   const [isMe, setIsMe] = useState<boolean | null>(null);
   const [soundURI, setSoundURI] = useState<any>(null);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [imageSource, setImageSource] = useState([]);
+  const [imageViewerVisible, setImageViewerVisible] = useState(false);
 
   const { showActionSheetWithOptions } = useActionSheet();
 
   useEffect(() => {
     DataStore.query(User, messages.userID).then(setUser);
   }, []);
+
+  useEffect(() => {
+    const downLoadImages = async () => {
+      // chage to suppot array of images
+      if (messages.image?.length > 0) {
+        // const uri = await Storage.get(messages.image[0]);
+
+        const uris = await Promise.all(messages.image?.map(Storage.get));
+        setImageSource(uris.map((uri) => ({ uri })));
+      }
+    };
+    downLoadImages();
+  }, [messages.image]);
+
+  const imageContainerWith = width * 1 - 90;
+
+  // console.log(imageSource);
 
   useEffect(() => {
     setMessage(propMessage);
@@ -175,13 +196,40 @@ const ChatMessage = (props: ChatMessageProps) => {
             {user?.name}
           </Text>
         )}
-        {messages.image && (
-          <View style={{ marginBottom: 5 }}>
-            <S3Image
-              imgKey={messages.image}
-              style={{ width: width * 0.7, aspectRatio: 4 / 3 }}
-              resizeMode="contain"
-            />
+        {imageSource.length > 0 && (
+          <View
+            style={[
+              { marginBottom: 5, width: imageContainerWith },
+              styles.images,
+            ]}
+          >
+            <>
+              {imageSource.map((imageSourceOne) => (
+                <Pressable
+                  style={[
+                    styles.imageContainer,
+                    imageSource.length == 1 && { flex: 0.93 },
+                  ]}
+                  onPress={() => setImageViewerVisible(true)}
+                >
+                  <Image
+                    source={imageSourceOne}
+                    // for S3Image =>
+                    // imgKey={imageSource[0]}
+                    // style={{ width: width * 0.7, aspectRatio: 4 / 3 }}
+                    style={styles.image}
+                    resizeMode="contain"
+                  />
+                </Pressable>
+              ))}
+
+              <ImageView
+                images={imageSource}
+                imageIndex={0}
+                visible={imageViewerVisible}
+                onRequestClose={() => setImageViewerVisible(false)}
+              />
+            </>
           </View>
         )}
         {soundURI && <AudioPlayer soundURI={soundURI} />}

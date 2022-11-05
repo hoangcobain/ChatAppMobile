@@ -1,19 +1,22 @@
 import { View, Text, StyleSheet, FlatList, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import { ChatRoom, ChatRoomUser, User } from "../../src/models";
-import { useRoute } from "@react-navigation/native";
-import { Auth, DataStore } from "aws-amplify";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { API, Auth, DataStore, graphqlOperation } from "aws-amplify";
 import UserListItem from "../../components/UserListItem";
+import { onUpdateChatRoom } from "../../src/graphql/subscriptions";
 
 const GroupInfoScreen = () => {
   const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const navigation = useNavigation();
   const route = useRoute();
 
   useEffect(() => {
-    fetchedChatRoom();
     fetchUsers();
-  }, []);
+  }, [allUsers]);
 
   const fetchUsers = async () => {
     const chatRoomUsers = await (await DataStore.query(ChatRoomUser))
@@ -24,6 +27,7 @@ const GroupInfoScreen = () => {
   };
 
   const fetchedChatRoom = async () => {
+    // setLoading(true);
     if (!route.params?.id) return;
 
     const chatRoom = await DataStore.query(ChatRoom, route.params.id);
@@ -32,7 +36,30 @@ const GroupInfoScreen = () => {
     } else {
       setChatRoom(chatRoom);
     }
+    // setLoading(false);
   };
+
+  useEffect(() => {
+    fetchedChatRoom();
+
+    // Subscribe to onUpdateChatRoom
+    const subscription = API.graphql(
+      graphqlOperation(onUpdateChatRoom, {
+        filter: { id: { eq: route.params?.id } },
+      })
+    ).subscribe({
+      next: ({ value }) => {
+        setChatRoom((cr) => ({
+          ...(cr || {}),
+          ...value.data.onUpdateChatRoom,
+        }));
+      },
+      error: (error) => console.warn(error),
+    });
+
+    // Stop receiving data updates from the subscription
+    return () => subscription.unsubscribe();
+  }, [route.params?.id]);
 
   const confirmDelete = async (user) => {
     //check if Auth user is admin of this group
@@ -78,7 +105,18 @@ const GroupInfoScreen = () => {
   return (
     <View style={styles.root}>
       <Text style={styles.title}>{chatRoom?.name}</Text>
-      <Text style={styles.title}>Users ({allUsers.length})</Text>
+      <View style={styles.textPaticipants}>
+        <Text style={styles.title}>Participants ({allUsers.length})</Text>
+        <Text
+          style={{ fontWeight: "bold", color: "royalblue" }}
+          onPress={() =>
+            navigation.navigate("AddContactsToGroupScreen", { chatRoom })
+          }
+        >
+          Invite friends
+        </Text>
+      </View>
+
       <FlatList
         data={allUsers}
         renderItem={({ item }) => (
@@ -88,6 +126,8 @@ const GroupInfoScreen = () => {
             onLongPress={() => confirmDelete(item)}
           />
         )}
+        onRefresh={fetchedChatRoom}
+        refreshing={loading}
       />
     </View>
   );
@@ -103,6 +143,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     paddingVertical: 5,
+  },
+  textPaticipants: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });
 

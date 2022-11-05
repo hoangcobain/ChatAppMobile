@@ -23,7 +23,7 @@ const UserListItem = ({
   // console.log(user);
 
   return (
-    <TouchableWithoutFeedback onPress={onPress} onLongPress={onLongPress}>
+    <TouchableOpacity onPress={onPress} onLongPress={onLongPress}>
       <View style={styles.container}>
         <View style={styles.leftContainer}>
           <Image source={{ uri: user.imageUri }} style={styles.avatar} />
@@ -41,7 +41,7 @@ const UserListItem = ({
           />
         )}
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 };
 

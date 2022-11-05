@@ -36,14 +36,31 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "column",
   },
-  imageContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  // imageContainer: {
+  //   flexDirection: "row",
+  //   justifyContent: "space-between",
+  //   margin: 5,
+  //   padding: 5,
+  //   borderWidth: 1,
+  //   borderColor: "lightgray",
+  //   borderRadius: 3,
+  // },
+  attachmentsContainer: {
+    alignItems: "flex-start",
+  },
+  selectedImage: {
+    height: 100,
+    width: 200,
     margin: 5,
-    padding: 5,
-    borderWidth: 1,
-    borderColor: "lightgray",
-    borderRadius: 3,
+    borderRadius: 4,
+  },
+  removeSelectedImage: {
+    position: "absolute",
+    right: 157,
+    top: 6,
+    backgroundColor: "white",
+    borderRadius: 10,
+    overflow: "hidden",
   },
 });
 

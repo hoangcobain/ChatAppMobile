@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
     // width: 300, // luu y chinh box
     // marginLeft: 50, // luu y chinh box
     flexDirection: "row",
+    maxWidth: "100%",
   },
   messageBox: {
     backgroundColor: "#e5e5e5",
@@ -38,6 +39,21 @@ const styles = StyleSheet.create({
   //   borderColor: "lightgray",
   //   borderWidth: 1,
   // },
+  imageContainer: {
+    width: "50%",
+    aspectRatio: 1,
+    padding: 3,
+  },
+  image: {
+    flex: 1,
+    borderColor: "white",
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  images: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
 });
 
 export default styles;

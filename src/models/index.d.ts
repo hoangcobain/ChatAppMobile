@@ -27,7 +27,7 @@ export declare class Message {
   readonly content?: string | null;
   readonly userID: string;
   readonly chatroomID: string;
-  readonly image?: string | null;
+  readonly image?: (string | null)[] | null;
   readonly audio?: string | null;
   readonly status?: MessageStatus | keyof typeof MessageStatus | null;
   readonly replyToMessageID?: string | null;

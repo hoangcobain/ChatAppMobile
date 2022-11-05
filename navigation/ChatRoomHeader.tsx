@@ -81,6 +81,10 @@ const ChatRoomHeader = ({ id }) => {
     navagitaion.navigate("GroupInfoScreen", { id });
   };
 
+  const openInfoPeople = () => {
+    navagitaion.navigate("UserInfoScreen", { id: user.id });
+  };
+
   return (
     <View
       style={{
@@ -91,7 +95,10 @@ const ChatRoomHeader = ({ id }) => {
         alignItems: "center",
       }}
     >
-      <Pressable onPress={isGroup() ? openInfo : null} style={styles.info}>
+      <Pressable
+        onPress={isGroup() ? openInfo : openInfoPeople}
+        style={styles.info}
+      >
         <Image
           source={{
             uri: chatRoom?.imageUri || user?.imageUri,

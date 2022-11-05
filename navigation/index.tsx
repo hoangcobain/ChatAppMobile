@@ -43,6 +43,9 @@ import MenuCustom from "../components/MenuItem";
 import { FA5Style } from "@expo/vector-icons/build/FontAwesome5";
 import ChatRoomHeader from "./ChatRoomHeader";
 import GroupInfoScreen from "../screens/GroupInfoScreen/GroupInfoScreen";
+import StatusUserScreen from "../screens/StatusUserScreen";
+import UserInfoScreen from "../screens/UserInfoScreen";
+import AddContactsToGroupScreen from "../screens/AddContactsToGroupScreen";
 
 export default function Navigation({
   colorScheme,
@@ -124,6 +127,21 @@ function RootNavigator() {
         options={{ title: "GroupInfoScreen" }}
       />
       <Stack.Screen
+        name="AddContactsToGroupScreen"
+        component={AddContactsToGroupScreen}
+        options={{ title: "Add user" }}
+      />
+      <Stack.Screen
+        name="UserInfoScreen"
+        component={UserInfoScreen}
+        options={{ title: "User" }}
+      />
+      <Stack.Screen
+        name="StatusUserScreen"
+        component={StatusUserScreen}
+        options={{ title: "Update status" }}
+      />
+      <Stack.Screen
         name="NotFound"
         component={NotFoundScreen}
         options={{ title: "Oops!" }}
@@ -188,30 +206,31 @@ function BottomTabNavigator() {
         name="TabTwo"
         component={TabTwoScreen}
         options={{
-          title: "Status",
+          title: "Info",
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="battery" color={color} />
+            // <TabBarIcon name="battery" color={color} />
+            <FontAwesome name="user-circle" size={30} color={color} />
           ),
         }}
       />
 
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Call"
         component={TabTwoScreen}
         options={{
           title: "Call",
           tabBarIcon: ({ color }) => <TabBarIcon name="phone" color={color} />,
         }}
-      />
+      /> */}
 
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Camera"
         component={TabTwoScreen}
         options={{
           title: "Camera",
           tabBarIcon: ({ color }) => <TabBarIcon name="camera" color={color} />,
         }}
-      />
+      /> */}
     </BottomTab.Navigator>
   );
 }

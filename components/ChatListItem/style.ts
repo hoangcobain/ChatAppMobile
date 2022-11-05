@@ -6,6 +6,8 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "space-between",
     padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "lightgray",
   },
   badgeContainer: {
     backgroundColor: "#3777f0",
@@ -37,6 +39,8 @@ const styles = StyleSheet.create({
     height: 60,
     marginRight: 13,
     borderRadius: 50,
+    borderWidth: 1,
+    borderColor: "lightgray",
   },
   username: {
     fontWeight: "bold",

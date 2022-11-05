@@ -22,7 +22,7 @@ const ChatRoomScreen = () => {
   const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
 
   const route = useRoute();
-  // console.log(route.params);
+  // console.log(route);
 
   useEffect(() => {
     fetchedChatRoom();

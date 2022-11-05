@@ -54,9 +54,6 @@ const ChatListItem = (props: ChatListItemProps) => {
     );
   }, [lastMessage]);
 
-  // const user = chatRoom.users[1];
-  // console.log(user);
-
   // useEffect(() => {
   //   const subscription = DataStore.observe(
   //     Message,
@@ -68,12 +65,14 @@ const ChatListItem = (props: ChatListItemProps) => {
   //         ...(message || {}),
   //         ...data.element,
   //       }));
+  //       // console.log(data.element);
+  //       // setLastMessage(data.element);
   //     }
   //   });
   //   console.log(lastMessage);
 
   //   return () => subscription.unsubscribe();
-  // }, [chatRoom.chatRoomLastMessageId]);
+  // }, [lastMessage?.chatroomID]);
 
   if (isLoading) {
     return <ActivityIndicator />;
