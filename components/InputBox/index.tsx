@@ -416,7 +416,7 @@ const InputBox = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
         </View>
         <TouchableOpacity onPress={onPress}>
           <View style={styles.buttonContainer}>
-            {message || image || soundURI ? (
+            {message || image.length > 0 || soundURI ? (
               <MaterialIcons name="send" size={24} color="white" />
             ) : (
               <Pressable onPressIn={startRecording} onPressOut={stopRecording}>
