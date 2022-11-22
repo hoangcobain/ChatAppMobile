@@ -321,7 +321,7 @@ const InputBox = ({ chatRoom, messageReplyTo, removeMessageReplyTo }) => {
           <Pressable
             onPress={() => {
               setIsEmojiOpen((currentValue) => !currentValue);
-              setImage(null);
+              setImage([]);
             }}
           >
             <FontAwesome5 name="laugh-beam" size={24} color="grey" />
