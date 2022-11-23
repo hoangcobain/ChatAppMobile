@@ -208,7 +208,7 @@ const ChatMessage = (props: ChatMessageProps) => {
                 <Pressable
                   style={[
                     styles.imageContainer,
-                    imageSource.length == 1 && { flex: 0.93 },
+                    imageSource.length == 1 && { flex: 1 },
                   ]}
                   onPress={() => setImageViewerVisible(true)}
                 >
@@ -218,7 +218,7 @@ const ChatMessage = (props: ChatMessageProps) => {
                     // imgKey={imageSource[0]}
                     // style={{ width: width * 0.7, aspectRatio: 4 / 3 }}
                     style={styles.image}
-                    resizeMode="contain"
+                    resizeMode="cover"
                   />
                 </Pressable>
               ))}

@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   //   borderWidth: 1,
   // },
   imageContainer: {
-    width: "50%",
+    width: "47%",
     aspectRatio: 1,
     padding: 3,
   },
